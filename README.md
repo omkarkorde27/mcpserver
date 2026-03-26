@@ -71,7 +71,7 @@ uvicorn server:app --host 0.0.0.0 --port 8000
 2. Set Agent Type: **MCP Server Agent**
 3. Set Name: **Graduate Programs Link Assistant**
 4. Set Description: *Provides official webpage URLs and contact page links for all 15 Indiana University graduate schools. Use this agent to supply students with direct links to program pages, admissions contacts, and school directories. Does not answer content questions directly; the knowledge source handles that.*
-5. Set Endpoint: `https://[your-deployed-url]/sse`
+5. Set Endpoint: `https://mcpserver-fvod.onrender.com/sse` 
 6. Set Status: **Active**
 7. Link the agent to your project in **Project Setup > Linked Agents**
 
