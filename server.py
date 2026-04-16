@@ -20,6 +20,8 @@ Usage:
 from mcp.server.fastmcp import FastMCP
 from schools import SCHOOLS, FALLBACK_URL
 from matching import find_school, find_multiple_schools
+from starlette.routing import Route
+from starlette.responses import JSONResponse
 
 
 mcp = FastMCP(
@@ -30,6 +32,9 @@ mcp = FastMCP(
         "students with direct links to program pages and admissions contacts."
     ),
 )
+
+async def health(request):
+    return JSONResponse({"status": "ok"})
 
 
 @mcp.tool()
