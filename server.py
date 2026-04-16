@@ -22,12 +22,14 @@ from schools import SCHOOLS, FALLBACK_URL
 from matching import find_school, find_multiple_schools
 from starlette.routing import Route
 from starlette.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 mcp = FastMCP(
     "IU Graduate Programs",
     host="0.0.0.0",
     port=10000,
+    allowed_hosts=["mcpserver-1-2ico.onrender.com", "localhost", "127.0.0.1"],
     instructions=(
         "Provides official webpage URLs and contact page links for all 15 "
         "Indiana University graduate schools. Use this server to supply "
@@ -111,9 +113,16 @@ def get_contact_info(school_name: str) -> str:
     return "\n".join(lines)
 
 
-# Expose the ASGI app for production deployment with uvicorn
-# Usage: uvicorn server:app --host 0.0.0.0 --port 8000
+class HostRewriteMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        request.scope["headers"] = [
+            (b"host", b"localhost") if k == b"host" else (k, v)
+            for k, v in request.scope["headers"]
+        ]
+        return await call_next(request)
+
 app = mcp.sse_app()
+app.add_middleware(HostRewriteMiddleware)
 
 
 if __name__ == "__main__":
