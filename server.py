@@ -23,13 +23,15 @@ from matching import find_school, find_multiple_schools
 from starlette.routing import Route
 from starlette.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.applications import Starlette
+from starlette.routing import Route, Mount
+from starlette.middleware import Middleware
 
 
 mcp = FastMCP(
     "IU Graduate Programs",
     host="0.0.0.0",
     port=10000,
-    allowed_hosts=["mcpserver-1-2ico.onrender.com", "localhost", "127.0.0.1"],
     instructions=(
         "Provides official webpage URLs and contact page links for all 15 "
         "Indiana University graduate schools. Use this server to supply "
@@ -121,8 +123,20 @@ class HostRewriteMiddleware(BaseHTTPMiddleware):
         ]
         return await call_next(request)
 
-app = mcp.sse_app()
-app.add_middleware(HostRewriteMiddleware)
+async def health(request):
+    return JSONResponse({"status": "ok"})
+
+sse_app = mcp.sse_app()
+
+app = Starlette(
+    routes=[
+        Route("/health", health),
+        Mount("/", app=sse_app),
+    ],
+    middleware=[
+        Middleware(HostRewriteMiddleware)
+    ]
+)
 
 
 if __name__ == "__main__":
