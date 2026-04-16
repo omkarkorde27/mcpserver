@@ -26,6 +26,8 @@ from starlette.responses import JSONResponse
 
 mcp = FastMCP(
     "IU Graduate Programs",
+    host="0.0.0.0",
+    port=10000,
     instructions=(
         "Provides official webpage URLs and contact page links for all 15 "
         "Indiana University graduate schools. Use this server to supply "
